@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Transactions Management - FairPriceTracker{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Transactions Management</h2>
+    <a href="{% url 'add_transaction' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i> Add New Transaction
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if transactions %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Crop</th>
+                        <th>Farmer</th>
+                        <th>Warehouse</th>
+                        <th>Farmer Cost</th>
+                        <th>Transport</th>
+                        <th>Warehouse</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.crop.name }}</td>
+                        <td>{{ transaction.farmer.name }}</td>
+                        <td>{{ transaction.warehouse.shop_name }}</td>
+                        <td>৳{{ transaction.farmer_selling_cost }}</td>
+                        <td>৳{{ transaction.transport_cost }}</td>
+                        <td>৳{{ transaction.warehouse_cost }}</td>
+                        <td><strong>৳{{ transaction.total_cost }}</strong></td>
+                        <td>{{ transaction.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'edit_transaction' transaction.id %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'delete_transaction' transaction.id %}" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-exchange-alt fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No Transactions Found</h5>
+            <p class="text-muted">Get started by adding your first transaction.</p>
+            <a href="{% url 'add_transaction' %}" class="btn btn-primary">Add First Transaction</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

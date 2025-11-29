@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}Agent Dashboard - FairPriceTracker{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-0"><i class="fas fa-tachometer-alt me-2"></i>Agent Dashboard</h1>
+        <p class="text-muted">Welcome back, {{ user.username }}! Here's your overview.</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-2 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ crops.count }}</h4>
+                        <p class="mb-0 small">Crops</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-seedling fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ farmers.count }}</h4>
+                        <p class="mb-0 small">Farmers</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ warehouses.count }}</h4>
+                        <p class="mb-0 small">Warehouses</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-warehouse fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ transactions.count }}</h4>
+                        <p class="mb-0 small">Transactions</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-exchange-alt fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ cultivation_costs.count }}</h4>
+                        <p class="mb-0 small">Cultivation Costs</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calculator fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 mb-3">
+        <div class="card bg-dark text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="mb-0">{{ user_crops_count }}</h4>
+                        <p class="mb-0 small">Your Crops</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-leaf fa-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2 mb-3">
+                        <a href="{% url 'add_crop' %}" class="btn btn-outline-primary w-100 h-100 py-3">
+                            <i class="fas fa-seedling fa-2x mb-2"></i><br>
+                            Add Crop
+                        </a>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <a href="{% url 'add_farmer' %}" class="btn btn-outline-success w-100 h-100 py-3">
+                            <i class="fas fa-user-plus fa-2x mb-2"></i><br>
+                            Add Farmer
+                        </a>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <a href="{% url 'add_warehouse' %}" class="btn btn-outline-info w-100 h-100 py-3">
+                            <i class="fas fa-warehouse fa-2x mb-2"></i><br>
+                            Add Warehouse
+                        </a>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <a href="{% url 'add_transaction' %}" class="btn btn-outline-warning w-100 h-100 py-3">
+                            <i class="fas fa-exchange-alt fa-2x mb-2"></i><br>
+                            Add Transaction
+                        </a>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <a href="{% url 'add_cultivation_cost' %}" class="btn btn-outline-secondary w-100 h-100 py-3">
+                            <i class="fas fa-calculator fa-2x mb-2"></i><br>
+                            Add Cost
+                        </a>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <a href="{% url 'crop_list' %}" class="btn btn-outline-dark w-100 h-100 py-3">
+                            <i class="fas fa-list fa-2x mb-2"></i><br>
+                            Manage All
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity Section -->
+<div class="row">
+    <!-- Recent Crops -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-seedling me-2"></i>Recent Crops</h5>
+                <a href="{% url 'crop_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if crops %}
+                <div class="list-group list-group-flush">
+                    {% for crop in crops|slice:":5" %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-leaf text-success me-2"></i>
+                            <strong>{{ crop.name }}</strong>
+                        </div>
+                        <small class="text-muted">{{ crop.created_at|date:"M d" }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-seedling fa-2x text-muted mb-3"></i>
+                    <h6 class="text-muted">No crops added yet</h6>
+                    <a href="{% url 'add_crop' %}" class="btn btn-sm btn-primary">Add First Crop</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Recent Transactions</h5>
+                <a href="{% url 'transaction_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if transactions %}
+                <div class="list-group list-group-flush">
+                    {% for transaction in transactions|slice:":5" %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>{{ transaction.crop.name }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    {{ transaction.farmer.name }} → {{ transaction.warehouse.shop_name }}
+                                </small>
+                            </div>
+                            <div class="text-end">
+                                <strong class="text-primary">৳{{ transaction.total_cost }}</strong>
+                                <br>
+                                <small class="text-muted">{{ transaction.created_at|date:"M d" }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-exchange-alt fa-2x text-muted mb-3"></i>
+                    <h6 class="text-muted">No transactions yet</h6>
+                    <a href="{% url 'add_transaction' %}" class="btn btn-sm btn-primary">Add First Transaction</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Stats Section -->
+<div class="row">
+    <!-- Farmers Overview -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-users me-2"></i>Farmers Overview</h6>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-users fa-3x text-success mb-3"></i>
+                    <h3>{{ farmers.count }}</h3>
+                    <p class="text-muted">Total Farmers</p>
+                </div>
+                <a href="{% url 'farmer_list' %}" class="btn btn-outline-success btn-sm">Manage Farmers</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warehouses Overview -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-warehouse me-2"></i>Warehouses Overview</h6>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-warehouse fa-3x text-info mb-3"></i>
+                    <h3>{{ warehouses.count }}</h3>
+                    <p class="text-muted">Total Warehouses</p>
+                </div>
+                {% with approved_warehouses=warehouses|length %}
+                {% with pending_warehouses=warehouses.filter.is_approved|length %}
+                <div class="small text-muted mb-2">
+                    <span class="badge bg-success">{{ approved_warehouses }} Approved</span>
+                    <span class="badge bg-warning">{{ pending_warehouses }} Pending</span>
+                </div>
+                {% endwith %}
+                {% endwith %}
+                <a href="{% url 'warehouse_list' %}" class="btn btn-outline-info btn-sm">Manage Warehouses</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cultivation Costs Overview -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-calculator me-2"></i>Costs Overview</h6>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-calculator fa-3x text-secondary mb-3"></i>
+                    <h3>{{ cultivation_costs.count }}</h3>
+                    <p class="text-muted">Cost Records</p>
+                </div>
+                {% if cultivation_costs %}
+                {% with total_costs=cultivation_costs.0.total_cost %}
+                <div class="small text-muted mb-2">
+                    Latest: ৳{{ cultivation_costs.0.total_cost }}
+                </div>
+                {% endwith %}
+                {% endif %}
+                <a href="{% url 'cultivation_cost_list' %}" class="btn btn-outline-secondary btn-sm">Manage Costs</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>System Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div class="mb-2">
+                            <i class="fas fa-user-check fa-2x text-success"></i>
+                        </div>
+                        <h6>Account Status</h6>
+                        <span class="badge bg-success">Active</span>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="mb-2">
+                            <i class="fas fa-clock fa-2x text-primary"></i>
+                        </div>
+                        <h6>Last Login</h6>
+                        <small class="text-muted">{{ user.last_login|date:"M d, Y H:i"|default:"First time" }}</small>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="mb-2">
+                            <i class="fas fa-calendar-alt fa-2x text-info"></i>
+                        </div>
+                        <h6>Member Since</h6>
+                        <small class="text-muted">{{ user.date_joined|date:"M d, Y" }}</small>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="mb-2">
+                            <i class="fas fa-chart-line fa-2x text-warning"></i>
+                        </div>
+                        <h6>Your Contributions</h6>
+                        <small class="text-muted">{{ user_crops_count }} crops added</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

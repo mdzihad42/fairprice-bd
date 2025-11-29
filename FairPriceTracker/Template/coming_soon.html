@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Imported Products - Coming Soon - FairPriceTracker{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0 text-center"><i class="fas fa-boxes me-2"></i>Imported Products</h4>
+            </div>
+            <div class="card-body text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-tools fa-4x text-info mb-3"></i>
+                    <h3 class="text-info">Feature Coming Soon</h3>
+                </div>
+                
+                <div class="alert alert-info mx-auto" style="max-width: 500px;">
+                    <h5 class="alert-heading">Under Development</h5>
+                    <p class="mb-0">
+                        The imported products tracking feature is currently under development. 
+                        This module will provide comprehensive information about imported agricultural products,
+                        their prices, and market availability.
+                    </p>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <i class="fas fa-globe text-primary fa-2x mb-3"></i>
+                                <h6>International Prices</h6>
+                                <p class="small text-muted mb-0">
+                                    Track global market prices for imported goods
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <i class="fas fa-ship text-primary fa-2x mb-3"></i>
+                                <h6>Import Logistics</h6>
+                                <p class="small text-muted mb-0">
+                                    Monitor shipping and customs information
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <i class="fas fa-chart-bar text-primary fa-2x mb-3"></i>
+                                <h6>Market Analytics</h6>
+                                <p class="small text-muted mb-0">
+                                    Analyze import trends and price fluctuations
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <a href="{% url 'public_dashboard' %}" class="btn btn-primary me-2">
+                        <i class="fas fa-chart-line me-1"></i> Back to Market Prices
+                    </a>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-tachometer-alt me-1"></i> Go to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

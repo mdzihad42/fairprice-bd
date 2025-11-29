@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Market Prices - FairPriceTracker{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2">
+            <h1 class="h3 mb-3 mb-md-0 fw-bold text-primary">
+                <i class="fas fa-chart-line me-2"></i>Agricultural Market Prices
+            </h1>
+            <form method="get" class="d-flex w-100 w-md-auto">
+                <input type="text" name="search" class="form-control me-2 rounded-pill shadow-sm" 
+                       placeholder="Search crops..." value="{{ search_query }}">
+                <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                    Search
+                </button>
+            </form>
+        </div>
+        <p class="text-muted">Real-time crop prices from farmers and warehouses</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for data in crop_data %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden hover-scale">
+            
+            {% if data.crop.image %}
+            <div class="position-relative overflow-hidden" style="height:200px;">
+                <img src="{{ data.crop.image.url }}" 
+                     alt="{{ data.crop.name }}"
+                     class="card-img-top w-100 h-100 object-fit-cover transition-hover">
+            </div>
+            {% endif %}
+
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-semibold">{{ data.crop.name }}</h5>
+
+                <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
+                    <span class="h5 text-success fw-bold">৳{{ data.avg_price|floatformat:2 }}</span>
+                    <span class="badge bg-secondary rounded-pill px-3 py-1">
+                        {{ data.transaction_count }} transactions
+                    </span>
+                </div>
+
+                <p class="card-text text-muted mb-3">Average market price per kg</p>
+
+                <a href="{% url 'crop_details' data.crop.id %}" 
+                   class="btn btn-outline-primary mt-auto rounded-pill fw-medium w-100">
+                    View Details <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card shadow-sm border-0 text-center py-5 rounded-4">
+            <i class="fas fa-search fa-4x text-muted mb-3"></i>
+            <h5 class="text-muted fw-semibold">No crops found</h5>
+            <p class="text-muted">Try adjusting your search criteria</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+.hover-scale:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+}
+
+.object-fit-cover {
+    object-fit: cover;
+}
+
+.transition-hover {
+    transition: transform 0.3s ease;
+}
+
+.transition-hover:hover {
+    transform: scale(1.05);
+}
+</style>
+{% endblock %}

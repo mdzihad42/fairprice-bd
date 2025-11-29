@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FairPriceTracker{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: #eef2f7;
+            font-family: "Inter", sans-serif;
+        }
+
+        /* Navbar */
+        /* Navbar */
+.navbar {
+    background: #1a2837; /* New solid color */
+    /* Or use a gradient: background: linear-gradient(90deg, #1a2837, #2c3e50); */
+    backdrop-filter: blur(10px);
+    padding: 10px 0;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.15);
+}
+.navbar-brand {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: #fff; /* Ensure the text contrasts with the new background */
+}
+
+
+
+        /* Sidebar */
+        .sidebar {
+            background: #ffffff;
+            min-height: 100vh;
+            padding-top: 25px;
+            border-right: 1px solid #e4e6eb;
+            box-shadow: 4px 0 12px rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+
+        .sidebar-heading {
+            font-size: 0.75rem;
+            font-weight: 600;
+            opacity: 0.6;
+            padding: 0 22px;
+            letter-spacing: 0.7px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .nav-link {
+            color: #333;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            transition: 0.25s ease-in-out;
+        }
+
+        .nav-link:hover {
+            background: #606060;
+            transform: translateX(3px);
+        }
+
+        .nav-link.active {
+            background: #2c3e50;
+            color: white !important;
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.4);
+        }
+
+        /* Active Indicator Line */
+        .nav-link.active::before {
+            content: "";
+            position: absolute;
+            height: 65%;
+            width: 4px;
+            background: #00c8ff;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 20px;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            transition: 0.25s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        /* Content Spacing */
+        main {
+            padding-top: 25px;
+        }
+
+        /* Alerts */
+        .alert {
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: #2c3e50;
+            border-color: #2c3e50;
+            border-radius: 10px;
+            padding: 8px 18px;
+        }
+        .btn-primary:hover {
+            background: #1a2837;
+        }
+
+        .btn-outline-primary {
+            border-radius: 10px;
+        }
+
+        /* Table */
+        .table thead th {
+            background: #f3f5f8;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e6e7e9;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'public_dashboard' %}">
+                <i class="fas fa-balance-scale"></i> FairPriceTracker
+            </a>
+
+            <div class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <span class="navbar-text me-3 text-light fw-medium">
+                        <i class="fas fa-user-circle me-1"></i> {{ user.username }} ({{ user.get_role_display }})
+                    </span>
+                    <a class="nav-link text-light" href="{% url 'logout' %}">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </a>
+                {% else %}
+                    <a class="nav-link text-light" href="{% url 'login' %}">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                    <a class="nav-link text-light" href="{% url 'register' %}">
+                        <i class="fas fa-user-plus me-1"></i> Register
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Layout -->
+    <div class="container-fluid">
+        <div class="row">
+
+            {% if user.is_authenticated %}
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 sidebar">
+
+                <h6 class="sidebar-heading">Main</h6>
+                <ul class="nav flex-column mb-3">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+                           href="{% url 'dashboard' %}">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                </ul>
+
+                {% if user.role == 'agent' and user.is_approved %}
+                <h6 class="sidebar-heading">Management</h6>
+                <ul class="nav flex-column mb-3">
+                    <li class="nav-item"><a class="nav-link {% if 'crop' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'crop_list' %}"><i class="fas fa-seedling"></i> Crops</a></li>
+                    <li class="nav-item"><a class="nav-link {% if 'farmer' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'farmer_list' %}"><i class="fas fa-users"></i> Farmers</a></li>
+                    <li class="nav-item"><a class="nav-link {% if 'warehouse' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'warehouse_list' %}"><i class="fas fa-warehouse"></i> Warehouses</a></li>
+                    <li class="nav-item"><a class="nav-link {% if 'transaction' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'transaction_list' %}"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+                    <li class="nav-item"><a class="nav-link {% if 'cultivation' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'cultivation_cost_list' %}"><i class="fas fa-leaf"></i> Cultivation Costs</a></li>
+                </ul>
+                {% endif %}
+
+                {% if user.role == 'admin' %}
+                <h6 class="sidebar-heading">Admin Controls</h6>
+                <ul class="nav flex-column mb-3">
+                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}"><i class="fas fa-cog"></i> Admin Dashboard</a></li>
+                </ul>
+                {% endif %}
+
+                <h6 class="sidebar-heading">Public</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'public_dashboard' %}"><i class="fas fa-chart-line"></i> Market Prices</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'coming_soon' %}"><i class="fas fa-box"></i> Imported Products</a></li>
+                </ul>
+
+            </nav>
+            {% endif %}
+
+            <!-- Main Content -->
+            <main class="{% if user.is_authenticated %}col-md-9 col-lg-10{% else %}col-12{% endif %}">
+
+                {% if messages %}
+                <div class="mt-3">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </main>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
