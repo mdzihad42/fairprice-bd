@@ -16,9 +16,11 @@ class CustomUserCreationForm(UserCreationForm):
         # but we validate it in clean()
         self.fields['district'].required = False
 
-        # Exclude 'govt' from role choices for public registration
-        current_choices = list(self.fields['role'].choices)
-        self.fields['role'].choices = [c for c in current_choices if c[0] != 'govt'] 
+        # Check if a Government user already exists
+        if User.objects.filter(role='govt').exists():
+            # If exists, remove 'govt' from choices so no one else can see/select it
+            current_choices = list(self.fields['role'].choices)
+            self.fields['role'].choices = [c for c in current_choices if c[0] != 'govt']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -26,8 +28,10 @@ class CustomUserCreationForm(UserCreationForm):
         district = cleaned_data.get('district')
 
         if role == 'govt':
-            self.add_error('role', 'Government role cannot be registered publicly.')
-
+            # Double check in backend validation
+            if User.objects.filter(role='govt').exists():
+                self.add_error('role', 'A Government account already exists. Only one is allowed.')
+        
         if role == 'admin':
             if not district:
                 self.add_error('district', 'District is required for Admin role.')
@@ -78,11 +82,12 @@ class WarehouseForm(forms.ModelForm):
 class FarmerToWarehouseForm(forms.ModelForm):
     class Meta:
         model = FarmerToWarehouseModel
-        fields = ['crop', 'farmer', 'warehouse', 'farmer_selling_cost', 'transport_cost', 'warehouse_cost']
+        fields = ['crop', 'farmer', 'warehouse', 'quantity_kg', 'farmer_selling_cost', 'transport_cost', 'warehouse_cost']
         widgets = {
             'crop': forms.Select(attrs={'class': 'form-control'}),
             'farmer': forms.Select(attrs={'class': 'form-control'}),
             'warehouse': forms.Select(attrs={'class': 'form-control'}),
+            'quantity_kg': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Total Quantity in KG'}),
             'farmer_selling_cost': forms.NumberInput(attrs={'class': 'form-control'}),
             'transport_cost': forms.NumberInput(attrs={'class': 'form-control'}),
             'warehouse_cost': forms.NumberInput(attrs={'class': 'form-control'}),
@@ -91,14 +96,19 @@ class FarmerToWarehouseForm(forms.ModelForm):
 class CultivationCostForm(forms.ModelForm):
     class Meta:
         model = CultivationCostCalculator
-        fields = ['farmer', 'crop', 'cultivation_area', 'seed_cost', 'extra_cost']
+        fields = ['farmer', 'crop', 'cultivation_area', 'seed_cost', 'fertilizer_cost', 'pesticide_cost', 'labor_cost', 'irrigation_cost', 'extra_cost']
         widgets = {
             'farmer': forms.Select(attrs={'class': 'form-control'}),
             'crop': forms.Select(attrs={'class': 'form-control'}),
-            'cultivation_area': forms.NumberInput(attrs={'class': 'form-control'}),
+            'cultivation_area': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Area in Acres'}),
             'seed_cost': forms.NumberInput(attrs={'class': 'form-control'}),
+            'fertilizer_cost': forms.NumberInput(attrs={'class': 'form-control'}),
+            'pesticide_cost': forms.NumberInput(attrs={'class': 'form-control'}),
+            'labor_cost': forms.NumberInput(attrs={'class': 'form-control'}),
+            'irrigation_cost': forms.NumberInput(attrs={'class': 'form-control'}),
             'extra_cost': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
 
 class UserProfileForm(forms.ModelForm):
     class Meta:

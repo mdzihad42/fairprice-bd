@@ -162,9 +162,21 @@
                             <tbody>
                                 {% for cost in cultivation_costs %}
                                 <tr>
-                                    <td class="fw-medium">{{ cost.farmer.name }}</td>
+                                    <td class="fw-medium">
+                                        {{ cost.farmer.name }}
+                                        <div class="small text-muted mt-1" style="font-size: 0.75rem;">
+                                            <span title="Seed Cost">🌱 ৳{{ cost.seed_cost }}</span> •
+                                            <span title="Fertilizer Cost">🧴 ৳{{ cost.fertilizer_cost }}</span> •
+                                            <span title="Labor Cost">👨‍🌾 ৳{{ cost.labor_cost }}</span>
+                                        </div>
+                                    </td>
                                     <td class="text-muted">{{ cost.cultivation_area }}ac</td>
-                                    <td class="text-end fw-bold text-dark">৳{{ cost.total_cost }}</td>
+                                    <td class="text-end fw-bold text-dark">
+                                        ৳{{ cost.total_cost }}
+                                        <div class="small text-muted fw-normal" style="font-size: 0.75rem;">
+                                            +৳{{ cost.extra_cost }} extra
+                                        </div>
+                                    </td>
                                     <td class="text-end text-success">৳{{ cost.cost_per_acre|floatformat:1 }}</td>
                                 </tr>
                                 {% endfor %}

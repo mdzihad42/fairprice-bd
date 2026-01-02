@@ -303,7 +303,7 @@
             {% for update in recent_updates %}
             <div class="ticker__item">
                 <i class="fas fa-bolt text-warning me-1"></i>
-                {{ update.crop.name }} updated at ৳{{ update.total_cost }} by {{ update.created_by.username }} ({{ update.warehouse.shop_name }})
+                {{ update.crop.name }} updated at ৳{{ update.unit_price|floatformat:2 }}/kg by {{ update.created_by.username }} ({{ update.warehouse.shop_name }})
             </div>
             {% endfor %}
         </div>

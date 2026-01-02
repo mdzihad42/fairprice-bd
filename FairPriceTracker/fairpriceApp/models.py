@@ -110,16 +110,23 @@ class FarmerToWarehouseModel(models.Model):
     farmer = models.ForeignKey(FarmerInfoModel, on_delete=models.CASCADE)
     warehouse = models.ForeignKey(WarehouseModel, on_delete=models.CASCADE)
 
+    quantity_kg = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(1)], default=1, verbose_name="Quantity (KG)")
     farmer_selling_cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     transport_cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     warehouse_cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
-    total_cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], editable=False)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], editable=False, default=0, help_text="Price per KG")
 
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'agent'})
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
         self.total_cost = self.farmer_selling_cost + self.transport_cost + self.warehouse_cost
+        if self.quantity_kg > 0:
+            self.unit_price = self.total_cost / self.quantity_kg
+        else:
+            self.unit_price = 0
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -137,16 +144,29 @@ class CultivationCostCalculator(models.Model):
     farmer = models.ForeignKey(FarmerInfoModel, on_delete=models.CASCADE)
     crop = models.ForeignKey(CropModel, on_delete=models.CASCADE)
 
-    cultivation_area = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    cultivation_area = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], help_text="Area in Acres")
+    
     seed_cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    fertilizer_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
+    pesticide_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
+    labor_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
+    irrigation_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
     extra_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
-    total_cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], editable=False)
 
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'agent'})
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        self.total_cost = self.seed_cost + self.extra_cost
+        self.total_cost = (
+            self.seed_cost + 
+            self.fertilizer_cost + 
+            self.pesticide_cost + 
+            self.labor_cost + 
+            self.irrigation_cost + 
+            self.extra_cost
+        )
         super().save(*args, **kwargs)
 
     @property

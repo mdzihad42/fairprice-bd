@@ -9,8 +9,9 @@ from .forms import *
 from django.db.models import Q
 import difflib
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.forms import AuthenticationForm
 def is_admin(user):
-    return user.is_authenticated and user.role == 'admin'
+    return user.is_authenticated and (user.role == 'admin' or user.role == 'govt' or user.is_superuser)
 
 def is_agent(user):
     return user.is_authenticated and user.role == 'agent'
@@ -29,7 +30,8 @@ def public_dashboard(request):
     crop_data = []
     for crop in crops:
         transactions = FarmerToWarehouseModel.objects.filter(crop=crop)
-        avg_price = transactions.aggregate(Avg('total_cost'))['total_cost__avg']
+        # Calculate Average Unit Price (Price per KG)
+        avg_price = transactions.aggregate(Avg('unit_price'))['unit_price__avg']
 
         crop_data.append({
             'crop': crop,
@@ -98,43 +100,70 @@ def register(request):
                 user.is_approved = True  
             user.save()
             login(request, user)
-            return redirect('dashboard')
+            
+            if user.role == 'govt':
+                return redirect('govt_dashboard')
+            elif user.role == 'admin':
+                return redirect('admin_dashboard')
+            elif user.role == 'agent':
+                return redirect('agent_dashboard')
+            else:
+                return redirect('public_dashboard')
     else:
         form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
 
 def login_system(request):
+    # If already unlocked, show option to lock
+    if request.session.get('system_access', False):
+         if request.method == 'POST' and 'lock' in request.POST:
+             # Lock it back
+             del request.session['system_access']
+             messages.success(request, "System access locked.")
+             return redirect('public_dashboard')
+         return render(request, 'login_system.html', {'unlocked': True})
+
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        u = request.POST.get('username')
+        p = request.POST.get('password')
         
-        # Hardcoded credentials for system access
-        if username == 'system' and password == 'agro123':
+        # Hardcoded check
+        if u == 'system' and p == 'agro123':
             request.session['system_access'] = True
-            messages.success(request, 'System access granted! You can now login or register.')
+            messages.success(request, "System access granted! Registration unlocked.")
             return redirect('public_dashboard')
         else:
-            messages.error(request, 'Invalid system credentials.')
-            
+            messages.error(request, "Invalid system credentials.")
+    
     return render(request, 'login_system.html')
 
 def logout_system(request):
     if 'system_access' in request.session:
         del request.session['system_access']
-        messages.info(request, "System access locked.")
+    messages.success(request, "System access locked.")
     return redirect('public_dashboard')
 
 def user_login(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('dashboard')
-        else:
-            messages.error(request, 'Invalid username or password')
-    return render(request, 'registration/login.html')
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                
+                if user.role == 'govt':
+                    return redirect('govt_dashboard')
+                elif user.role == 'admin':
+                    return redirect('admin_dashboard')
+                elif user.role == 'agent':
+                    return redirect('agent_dashboard')
+                else:
+                    return redirect('public_dashboard')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'registration/login.html', {'form': form})
 
 def user_logout(request):
     logout(request)
@@ -152,7 +181,7 @@ def dashboard(request):
         return redirect('public_dashboard')
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or u.role == 'govt')
 def govt_dashboard(request):
     admins = User.objects.filter(role='admin')
     agents = User.objects.filter(role='agent')
@@ -170,10 +199,21 @@ def govt_dashboard(request):
 def delete_user(request, user_id):
     user_to_delete = get_object_or_404(User, id=user_id)
     
-    # Superuser can delete anyone except other superusers/govt
-    if request.user.is_superuser:
+    # Prevent self-deletion
+    if user_to_delete == request.user:
+        messages.error(request, "You cannot delete your own account.")
+        return redirect(request.META.get('HTTP_REFERER', 'dashboard'))
+
+    # Govt Permissions: Absolute power (can delete anyone, including superusers)
+    if request.user.role == 'govt':
+        user_to_delete.delete()
+        messages.success(request, f"User {user_to_delete.username} deleted successfully.")
+        return redirect('govt_dashboard')
+    
+    # Superuser Permissions (Standard safe-guards)
+    elif request.user.is_superuser:
         if user_to_delete.is_superuser or user_to_delete.role == 'govt':
-            messages.error(request, "Cannot delete government/superuser accounts.")
+             messages.error(request, "Cannot delete Government or other Superuser accounts.")
         else:
             user_to_delete.delete()
             messages.success(request, "User deleted successfully.")
@@ -201,7 +241,16 @@ def admin_dashboard(request):
         pending_agents = User.objects.filter(role='agent', is_approved=False, district=request.user.district)
         active_agents = User.objects.filter(role='agent', is_approved=True, district=request.user.district)
         
-        pending_warehouses = WarehouseModel.objects.filter(is_approved=False, location__icontains=request.user.district)
+        # Filter warehouses created by agents in the same district, OR matching location string
+        pending_warehouses = WarehouseModel.objects.filter(
+            Q(is_approved=False) & 
+            (Q(created_by__district=request.user.district) | Q(location__icontains=request.user.district))
+        )
+        
+        active_warehouses = WarehouseModel.objects.filter(
+            Q(is_approved=True) & 
+            (Q(created_by__district=request.user.district) | Q(location__icontains=request.user.district))
+        )
         
         # Recent activities (Filtered by Agents in Admin's District)
         recent_activities = FarmerToWarehouseModel.objects.filter(
@@ -212,12 +261,14 @@ def admin_dashboard(request):
         active_agents = User.objects.filter(role='agent', is_approved=True)
 
         pending_warehouses = WarehouseModel.objects.filter(is_approved=False)
+        active_warehouses = WarehouseModel.objects.filter(is_approved=True)
         recent_activities = FarmerToWarehouseModel.objects.select_related('created_by', 'crop', 'warehouse').order_by('-created_at')[:20]
     
     context = {
         'pending_agents': pending_agents,
         'active_agents': active_agents,
         'pending_warehouses': pending_warehouses,
+        'active_warehouses': active_warehouses,
         'recent_activities': recent_activities
     }
 
