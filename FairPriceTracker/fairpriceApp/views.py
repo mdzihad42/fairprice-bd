@@ -598,3 +598,57 @@ def manage_about_content(request):
         form = AboutPageContentForm(instance=content)
     
     return render(request, 'manage_about.html', {'form': form, 'content': content})
+
+@login_required
+@user_passes_test(lambda u: u.role == 'govt')
+def manage_price_history(request, crop_id):
+    crop = get_object_or_404(CropModel, id=crop_id)
+    price_history = PriceHistory.objects.filter(crop=crop).order_by('year')
+
+    if request.method == 'POST':
+        year = request.POST.get('year')
+        price = request.POST.get('price')
+        
+        if year and price:
+            # Update or create logic to avoid duplicates for same year
+            history, created = PriceHistory.objects.get_or_create(
+                crop=crop, 
+                year=year,
+                defaults={'price': price}
+            )
+            if not created:
+                history.price = price
+                history.save()
+                messages.success(request, f'Price for {year} updated successfully!')
+            else:
+                messages.success(request, f'Price record for {year} added successfully!')
+            
+            return redirect('manage_price_history', crop_id=crop.id)
+            
+    return render(request, 'govt/manage_price_history.html', {
+        'crop': crop,
+        'price_history': price_history
+    })
+
+@login_required
+@user_passes_test(lambda u: u.role == 'govt')
+def manage_market_data(request):
+    crops = CropModel.objects.all()
+    crop_data = []
+    for crop in crops:
+        avg_price = FarmerToWarehouseModel.objects.filter(crop=crop).aggregate(Avg('unit_price'))['unit_price__avg'] or 0
+        crop_data.append({
+            'crop': crop,
+            'avg_price': avg_price
+        })
+    return render(request, 'govt/manage_market_data.html', {'crop_data': crop_data})
+
+@login_required
+@user_passes_test(lambda u: u.role == 'govt')
+def delete_price_history(request, history_id):
+    history = get_object_or_404(PriceHistory, id=history_id)
+    crop_id = history.crop.id
+    if request.method == 'POST':
+        history.delete()
+        messages.success(request, 'Price record deleted successfully!')
+    return redirect('manage_price_history', crop_id=crop_id)

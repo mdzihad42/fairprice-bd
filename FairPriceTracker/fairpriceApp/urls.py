@@ -63,5 +63,11 @@ urlpatterns = [
     path('logout_system/', views.logout_system, name='logout_system'),
     
     # Manage About Content
+    # Manage About Content
     path('govt/manage-about/', views.manage_about_content, name='manage_about_content'),
+    
+    # Manage Price History (Govt Only)
+    path('govt/manage-market-data/', views.manage_market_data, name='manage_market_data'),
+    path('govt/manage-price-history/<int:crop_id>/', views.manage_price_history, name='manage_price_history'),
+    path('govt/delete-price-history/<int:history_id>/', views.delete_price_history, name='delete_price_history'),
 ]
