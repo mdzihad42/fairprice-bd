@@ -4,6 +4,7 @@
 
 {% block content %}
 <style>
+    /* ... (Root variables remain) ... */
     :root {
         --card-hover-y: -8px;
         --card-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
@@ -43,6 +44,7 @@
         font-size: 1.1rem;
         border-radius: 50px;
         transition: all 0.3s ease;
+        width: 100%;
     }
 
     .search-input::placeholder {
@@ -181,25 +183,25 @@
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
+    /* Ticker Styles */
     .ticker-wrap {
         width: 100%;
         overflow: hidden;
         background-color: #f0fdf4;
-        padding-left: 100%;
-        box-sizing: content-box;
         border-radius: 12px;
         margin-bottom: 2rem;
         border: 1px solid #bbf7d0;
         height: 50px;
         display: flex;
         align-items: center;
+        position: relative;
     }
 
     .ticker {
         display: inline-block;
         white-space: nowrap;
-        padding-right: 100%;
-        box-sizing: content-box;
+        position: absolute;
+        will-change: transform;
         animation: ticker 40s linear infinite;
     }
 
@@ -217,7 +219,7 @@
 
     @keyframes ticker {
         0% {
-            transform: translate3d(0, 0, 0);
+            transform: translate3d(100vw, 0, 0);
         }
 
         100% {
@@ -233,11 +235,66 @@
         font-weight: 500;
         color: #374151;
         transition: all 0.2s;
+        width: 100%;
+        /* Full width on mobile by default */
+    }
+
+    @media (min-width: 768px) {
+        .sort-dropdown .dropdown-toggle {
+            width: auto;
+        }
     }
 
     .sort-dropdown .dropdown-toggle:hover {
         background: #f9fafb;
         border-color: #d1d5db;
+    }
+
+    /* --- RESPONSIVE MEDIA QUERIES --- */
+    @media (max-width: 767.98px) {
+        .hero-section {
+            padding: 2.5rem 1.5rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-section h1 {
+            font-size: 2rem;
+        }
+
+        .hero-section .lead {
+            font-size: 1rem;
+        }
+
+        .search-input {
+            height: 50px;
+            font-size: 1rem;
+            padding-left: 2.75rem;
+        }
+
+        .search-icon {
+            left: 1rem;
+            font-size: 1rem;
+        }
+
+        .stat-card {
+            padding: 1.25rem;
+            flex-direction: row;
+            /* Keep row unless very small */
+        }
+
+        .crop-image-wrapper {
+            height: 180px;
+            /* Smaller image on mobile */
+        }
+
+        .card-content {
+            padding: 1.25rem;
+        }
+
+        .crop-name {
+            font-size: 1.1rem;
+        }
     }
 </style>
 
@@ -311,7 +368,8 @@
     {% endif %}
 
     <!-- Market Overview Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div
+        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3 gap-md-0">
         <div>
             <h4 class="fw-bold text-dark m-0">Live Market Commodities</h4>
             <div class="d-flex align-items-center mt-1">
@@ -322,7 +380,7 @@
             </div>
         </div>
 
-        <div class="dropdown sort-dropdown">
+        <div class="dropdown sort-dropdown w-100 w-md-auto">
             <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
                 <i class="fas fa-sort me-2"></i>{% if request.GET.sort == 'price_low' %}Price: Low to High{% elif request.GET.sort == 'price_high' %}Price: High to Low{% else %}Sort by{% endif %}
             </button>
