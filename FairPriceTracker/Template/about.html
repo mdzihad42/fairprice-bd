@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - FairPriceTracker{% endblock %}
+
+{% block content %}
+<style>
+    /* Custom Styles for About Page */
+    .hero-bg {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-circle {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0) 70%);
+        border-radius: 50%;
+        top: -100px;
+        right: -100px;
+    }
+
+    .feature-icon-box {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon-box {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .stat-card-modern {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card-modern:hover {
+        transform: translateY(-10px);
+    }
+
+    .step-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        height: 100%;
+        position: relative;
+        z-index: 1;
+        transition: all 0.3s ease;
+    }
+
+    .step-card:hover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .step-number {
+        position: absolute;
+        top: -20px;
+        left: 20px;
+        font-size: 4rem;
+        font-weight: 800;
+        color: rgba(0, 0, 0, 0.03);
+        z-index: 0;
+        line-height: 1;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="div p-lg-4" data-aos="fade-in">
+    <div class="hero-bg text-white rounded-5 p-5 px-lg-5 py-lg-6 position-relative shadow-lg">
+        <div class="hero-circle"></div>
+        <div class="row align-items-center py-5 position-relative z-1">
+            <div class="col-lg-7">
+                <div
+                    class="d-inline-flex align-items-center bg-white bg-opacity-10 backdrop-blur rounded-pill px-3 py-1 mb-4 border border-white border-opacity-10">
+                    <span class="bg-success rounded-circle p-1 me-2"></span>
+                    <small class="fw-bold tracking-wide text-uppercase letter-spacing-1">Established 2024</small>
+                </div>
+                <h1 class="display-3 fw-bold mb-4 ls-tight">Revolutionizing <br><span
+                        class="text-success text-gradient">Agri-Markets</span></h1>
+                <p class="lead text-white-50 mb-5 col-lg-10">
+                    We are building a transparent ecosystem where farmers get fair value and consumers get verified
+                    quality. No hidden costs, no middleman bias.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="#mission"
+                        class="btn btn-success btn-lg rounded-pill px-5 fw-bold shadow-lg hover-scale">Our Mission</a>
+                    <a href="{% url 'public_dashboard' %}"
+                        class="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold hover-scale">View Market</a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block position-relative">
+                <img src="{% if content and content.hero_image %}{{ content.hero_image.url }}{% else %}https://images.unsplash.com/photo-1605000797499-95a059e00b28?q=80&w=2072&auto=format&fit=crop{% endif %}"
+                    class="img-fluid rounded-4 shadow-2xl rotate-3 hover-rotate-0 transition-all border border-4 border-white border-opacity-20"
+                    alt="Agriculture Technology">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-xl py-5" id="mission">
+    <!-- Stats Section -->
+    <div class="row g-4 mb-6 mt-n5 position-relative z-2 justify-content-center" data-aos="fade-up">
+        <div class="col-md-3 col-6">
+            <div class="stat-card-modern text-center">
+                <h2 class="display-5 fw-bold text-dark mb-1 counter">500+</h2>
+                <p class="text-muted fw-bold small text-uppercase mb-0">Farmers Empowered</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card-modern text-center">
+                <h2 class="display-5 fw-bold text-primary mb-1 counter">50+</h2>
+                <p class="text-muted fw-bold small text-uppercase mb-0">Warehouses</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card-modern text-center">
+                <h2 class="display-5 fw-bold text-success mb-1 counter">10k+</h2>
+                <p class="text-muted fw-bold small text-uppercase mb-0">Transactions</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card-modern text-center">
+                <h2 class="display-5 fw-bold text-warning mb-1 counter">24/7</h2>
+                <p class="text-muted fw-bold small text-uppercase mb-0">Realtime Updates</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission Content -->
+    <div class="row g-5 align-items-center mb-6 py-5">
+        <div class="col-lg-6" data-aos="fade-right">
+            <div class="position-relative ps-4">
+                <div class="position-absolute top-0 start-0 w-100 h-100 bg-success bg-opacity-10 rounded-4"
+                    style="transform: rotate(-3deg);"></div>
+                <img src="{% if content and content.mission_image %}{{ content.mission_image.url }}{% else %}https://images.unsplash.com/photo-1595839088514-6101c518ad98?q=80&w=2070&auto=format&fit=crop{% endif %}"
+                    class="img-fluid rounded-4 shadow-lg position-relative w-100" alt="Farmer">
+            </div>
+        </div>
+        <div class="col-lg-6" data-aos="fade-left">
+            <div class="ps-lg-4">
+                <h6 class="text-success fw-bold text-uppercase mb-2">Our Core Values</h6>
+                <h2 class="display-5 fw-bold mb-4 text-dark">Bridging the Gap with Transparency</h2>
+                <p class="text-muted mb-4 lead fs-6">
+                    We believe that information is power. By providing real-time data on crop prices and availability,
+                    we empower farmers to negotiate better and help buyers make informed decisions.
+                </p>
+
+                <div class="d-flex flex-column gap-4 mt-4">
+                    <div class="feature-card d-flex gap-4 p-3 rounded-4 bg-light bg-opacity-50 border border-light">
+                        <div class="feature-icon-box bg-white text-success shadow-sm">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-dark mb-1">Fair Compensation</h5>
+                            <p class="text-muted mb-0 small">Direct-to-market data helps farmers avoid underpricing
+                                their hard work.</p>
+                        </div>
+                    </div>
+                    <div class="feature-card d-flex gap-4 p-3 rounded-4 bg-light bg-opacity-50 border border-light">
+                        <div class="feature-icon-box bg-white text-primary shadow-sm">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-dark mb-1">Digital Access</h5>
+                            <p class="text-muted mb-0 small">A simple, accessible platform for rural and urban
+                                stakeholders alike.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="py-5 mb-5">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h6 class="text-primary fw-bold text-uppercase mb-2">Workflow</h6>
+            <h2 class="fw-bold display-6">How FairPriceTracker Works</h2>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="step-card">
+                    <span class="step-number">01</span>
+                    <div class="mb-4 text-success">
+                        <i class="fas fa-seedling fa-3x"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Farmers Register</h4>
+                    <p class="text-muted">Verified farmers list their produce and expected harvest dates on our secure
+                        platform.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="step-card">
+                    <span class="step-number">02</span>
+                    <div class="mb-4 text-primary">
+                        <i class="fas fa-warehouse fa-3x"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Warehouses Verify</h4>
+                    <p class="text-muted">Local warehouse agents inspect quality and update stock availability in
+                        real-time.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="step-card">
+                    <span class="step-number">03</span>
+                    <div class="mb-4 text-warning">
+                        <i class="fas fa-chart-line fa-3x"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Market Connects</h4>
+                    <p class="text-muted">Buyers view transparent pricing and farmers get paid what they truly deserve.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="bg-dark text-white rounded-5 p-5 text-center position-relative overflow-hidden" data-aos="zoom-in">
+        <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10"
+            style="background: url('https://www.transparenttextures.com/patterns/cubes.png');"></div>
+
+        <div class="position-relative z-1 py-4">
+            <h2 class="display-5 fw-bold mb-3">Join the Movement</h2>
+            <p class="lead text-white-50 mb-4 col-lg-8 mx-auto">Be part of the solution. Whether you grow, store, or
+                buy, FairPriceTracker is built for you.</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{% url 'login_system' %}"
+                    class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow-lg">Get Started Now</a>
+                <a href="#" class="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold">Contact Support</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

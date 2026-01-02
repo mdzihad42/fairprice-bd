@@ -1,0 +1,416 @@
+{% extends 'base.html' %}
+
+{% block title %}Live Market - FairPriceTracker{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --card-hover-y: -8px;
+        --card-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+        --primary-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    .hero-section {
+        background: var(--primary-gradient);
+        border-radius: 24px;
+        padding: 4rem 3rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 3rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .hero-pattern {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+        opacity: 0.3;
+        pointer-events: none;
+    }
+
+    .search-input {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding-left: 3rem;
+        height: 60px;
+        font-size: 1.1rem;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+    }
+
+    .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .search-input:focus {
+        background: rgba(255, 255, 255, 0.25);
+        color: white;
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+        outline: none;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.2rem;
+        z-index: 10;
+        pointer-events: none;
+    }
+
+    /* Stylish Card Design */
+    .crop-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        height: 100%;
+        position: relative;
+    }
+
+    .crop-card:hover {
+        transform: translateY(var(--card-hover-y));
+        box-shadow: var(--card-shadow);
+        border-color: transparent;
+    }
+
+    .crop-image-wrapper {
+        height: 220px;
+        overflow: hidden;
+        position: relative;
+        background-color: #f3f4f6;
+    }
+
+    .crop-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .crop-card:hover .crop-image {
+        transform: scale(1.1);
+    }
+
+    .price-badge {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(4px);
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-weight: 800;
+        color: #059669;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        z-index: 2;
+        transform: translateY(0);
+        transition: transform 0.3s ease;
+    }
+
+    .crop-card:hover .price-badge {
+        transform: scale(1.05);
+    }
+
+    .card-content {
+        padding: 1.5rem;
+    }
+
+    .crop-name {
+        font-weight: 800;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        font-size: 1.25rem;
+    }
+
+    .crop-desc {
+        color: #6b7280;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .btn-view-analytics {
+        background-color: #f3f4f6;
+        color: #374151;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+        width: 100%;
+        display: block;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .btn-view-analytics:hover {
+        background-color: #059669;
+        color: white;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .ticker-wrap {
+        width: 100%;
+        overflow: hidden;
+        background-color: #f0fdf4;
+        padding-left: 100%;
+        box-sizing: content-box;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        border: 1px solid #bbf7d0;
+        height: 50px;
+        display: flex;
+        align-items: center;
+    }
+
+    .ticker {
+        display: inline-block;
+        white-space: nowrap;
+        padding-right: 100%;
+        box-sizing: content-box;
+        animation: ticker 40s linear infinite;
+    }
+
+    .ticker:hover {
+        animation-play-state: paused;
+    }
+
+    .ticker__item {
+        display: inline-block;
+        padding: 0 2rem;
+        font-size: 0.95rem;
+        color: #166534;
+        font-weight: 600;
+    }
+
+    @keyframes ticker {
+        0% {
+            transform: translate3d(0, 0, 0);
+        }
+
+        100% {
+            transform: translate3d(-100%, 0, 0);
+        }
+    }
+
+    .sort-dropdown .dropdown-toggle {
+        background: white;
+        border: 1px solid #e5e7eb;
+        padding: 0.6rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 500;
+        color: #374151;
+        transition: all 0.2s;
+    }
+
+    .sort-dropdown .dropdown-toggle:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+    }
+</style>
+
+<div class="div p-lg-4" data-aos="fade-in">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-pattern"></div>
+        <div class="position-relative text-center">
+            <h1 class="display-4 fw-bold mb-3">Fair Market Transparency</h1>
+            <p class="lead mb-4 opacity-75 mx-auto" style="max-width: 600px;">
+                Real-time agricultural pricing data connecting farmers, warehouses, and consumers for a fair ecosystem.
+            </p>
+
+            <form action="" method="get" class="mx-auto position-relative" style="max-width: 500px;">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" name="search" class="form-control search-input"
+                    placeholder="Search for crops (e.g. Rice, Potato)..." value="{{ search_query }}">
+            </form>
+        </div>
+    </div>
+
+    <!-- Statistics Row -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="rounded-circle p-3 bg-primary bg-opacity-10 text-primary">
+                    <i class="fas fa-tractor fa-2x"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0">{{ total_farmers }}</h3>
+                    <p class="text-muted mb-0 small text-uppercase fw-bold">Active Farmers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="rounded-circle p-3 bg-success bg-opacity-10 text-success">
+                    <i class="fas fa-warehouse fa-2x"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0">{{ total_warehouses }}</h3>
+                    <p class="text-muted mb-0 small text-uppercase fw-bold">Verified Warehouses</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="rounded-circle p-3 bg-warning bg-opacity-10 text-warning">
+                    <i class="fas fa-exchange-alt fa-2x"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0">{{ total_transactions }}</h3>
+                    <p class="text-muted mb-0 small text-uppercase fw-bold">Total Transactions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Ticker -->
+    {% if recent_updates %}
+    <div class="ticker-wrap mb-4">
+        <div class="ticker">
+            {% for update in recent_updates %}
+            <div class="ticker__item">
+                <i class="fas fa-bolt text-warning me-1"></i>
+                {{ update.crop.name }} updated at ৳{{ update.total_cost }} by {{ update.created_by.username }} ({{ update.warehouse.shop_name }})
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Market Overview Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-dark m-0">Live Market Commodities</h4>
+            <div class="d-flex align-items-center mt-1">
+                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 me-2">
+                    <i class="fas fa-circle fa-xs me-1"></i> Live
+                </span>
+                <p class="text-muted small mb-0">Prices updated in real-time</p>
+            </div>
+        </div>
+
+        <div class="dropdown sort-dropdown">
+            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="fas fa-sort me-2"></i>{% if request.GET.sort == 'price_low' %}Price: Low to High{% elif request.GET.sort == 'price_high' %}Price: High to Low{% else %}Sort by{% endif %}
+            </button>
+            <ul class="dropdown-menu border-0 shadow-xl p-2 rounded-4 dropdown-menu-end">
+                <li>
+                    <h6 class="dropdown-header text-uppercase small fw-bold">Price Order</h6>
+                </li>
+                <li><a class="dropdown-item rounded-3 py-2"
+                        href="?sort=price_low{% if search_query %}&search={{ search_query }}{% endif %}"><i
+                            class="fas fa-sort-amount-down-alt me-2 text-muted"></i>Low to High</a></li>
+                <li><a class="dropdown-item rounded-3 py-2"
+                        href="?sort=price_high{% if search_query %}&search={{ search_query }}{% endif %}"><i
+                            class="fas fa-sort-amount-up me-2 text-muted"></i>High to Low</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item rounded-3 py-2" href="{% url 'public_dashboard' %}"><i
+                            class="fas fa-sync-alt me-2 text-muted"></i>Reset Filter</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Stylish Crop Grid -->
+    <div class="row g-4">
+        {% for item in crop_data %}
+        <div class="col-xl-3 col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+            <div class="crop-card h-100 d-flex flex-column">
+                <div class="crop-image-wrapper">
+                    {% if item.crop.image %}
+                    <img src="{{ item.crop.image.url }}" alt="{{ item.crop.name }}" class="crop-image">
+                    {% else %}
+                    <!-- Placeholder specific to agriculture -->
+                    <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted"
+                        style="background: linear-gradient(to top, #f3f4f6, #fff);">
+                        <div class="text-center">
+                            <i class="fas fa-seedling fa-3x mb-2 text-success opacity-25"></i>
+                            <p class="small mb-0 opacity-50">No Image Available</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="price-badge">
+                        ৳{{ item.avg_price|floatformat:0 }}<small class="fw-normal"
+                            style="font-size: 0.7em; opacity: 0.8">/kg</small>
+                    </div>
+                </div>
+
+                <div class="card-content flex-grow-1 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="crop-name">{{ item.crop.name }}</h5>
+                        {% if item.transaction_count > 5 %}
+                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 small">
+                            <i class="fas fa-fire"></i>
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <p class="crop-desc">
+                        {{ item.crop.description|default:"Essential agricultural commodity. View details for daily price fluctuations and warehouse availability." }}
+                    </p>
+
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-xs fw-bold text-uppercase text-muted"
+                                style="letter-spacing: 0.5px; font-size: 0.75rem;">
+                                <i class="fas fa-chart-line text-primary me-1"></i> {{ item.transaction_count }} Updates
+                            </span>
+                        </div>
+
+                        <a href="{% url 'crop_details' item.crop.id %}" class="btn-view-analytics">
+                            View Analytics <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="bg-light rounded-circle d-inline-flex p-5 mb-4 shadow-sm">
+                <i class="fas fa-search fa-4x text-muted opacity-25"></i>
+            </div>
+            <h3 class="fw-bold text-dark mb-2">No crops found</h3>
+            <p class="text-muted mb-4">We couldn't find any crops matching your search criteria.</p>
+            <a href="{% url 'public_dashboard' %}" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm">
+                Clear Search Filters
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

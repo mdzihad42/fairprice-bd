@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FairPriceTracker{% endblock %}</title>
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Font: Plus Jakarta Sans for a modern tech feel, or Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #059669;
+            /* Emerald 600 */
+            --primary-dark: #064e3b;
+            /* Emerald 900 */
+            --accent-color: #fbbf24;
+            /* Amber 400 */
+            --bg-color: #f0fdf4;
+            /* Light green tint */
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --sidebar-width: 280px;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(at 0% 0%, hsla(152, 100%, 96%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(130, 100%, 96%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(152, 100%, 96%, 1) 0, transparent 50%);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Premium Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--primary-dark) !important;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand i {
+            color: var(--primary-color);
+            background: rgba(5, 150, 105, 0.1);
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            color: var(--text-dark) !important;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            background: rgba(5, 150, 105, 0.05);
+        }
+
+        .btn-auth {
+            padding: 0.6rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: var(--primary-dark);
+            border: 1px solid transparent;
+        }
+
+        .btn-login:hover {
+            background: rgba(5, 150, 105, 0.05);
+        }
+
+        .btn-register {
+            background: var(--primary-dark);
+            color: white;
+            box-shadow: 0 4px 14px rgba(6, 78, 59, 0.2);
+            border: none;
+        }
+
+        .btn-register:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 78, 59, 0.3);
+            color: white;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: #ffffff;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            height: calc(100vh - 76px);
+            position: sticky;
+            top: 76px;
+            overflow-y: auto;
+            padding: 2rem 1rem;
+            display: none;
+            /* Hidden by default on mobile */
+        }
+
+        @media (min-width: 992px) {
+            .sidebar {
+                display: block !important;
+            }
+        }
+
+        .sidebar-heading {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 1.5rem 0 0.8rem 1rem;
+        }
+
+        .sidebar .nav-link {
+            color: var(--text-muted) !important;
+            margin-bottom: 5px;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: rgba(5, 150, 105, 0.05);
+            color: var(--primary-dark) !important;
+        }
+
+        .sidebar .nav-link:hover i {
+            transform: scale(1.1);
+        }
+
+        .sidebar .nav-link.active {
+            background-color: var(--primary-dark);
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(6, 78, 59, 0.25);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            min-height: calc(100vh - 76px);
+        }
+
+        /* Utils */
+        .card {
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        /* Alerts */
+        .alert {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid px-4 px-lg-5">
+            <a class="navbar-brand" href="{% url 'public_dashboard' %}">
+                <i class="fas fa-leaf"></i>
+                FairPrice<span style="color: var(--primary-color)">Tracker</span>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto align-items-center mb-2 mb-lg-0">
+                    <li class="nav-item me-2">
+                        <a class="nav-link" href="{% url 'public_dashboard' %}">Market</a>
+                    </li>
+                    <li class="nav-item me-2">
+                        <a class="nav-link" href="{% url 'about' %}">About</a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button"
+                            data-bs-toggle="dropdown">
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 35px; height: 35px; border: 2px solid var(--primary-color);">
+                                <i class="fas fa-user text-success"></i>
+                            </div>
+                            <span class="fw-semibold">{{ user.username }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4 mt-2 p-2">
+                            <li><span class="dropdown-header text-uppercase small fw-bold">Role: {{ user.get_role_display }}</span></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            {% if user.role == 'agent' %}
+                            <li><a class="dropdown-item rounded-2" href="{% url 'dashboard' %}"><i
+                                        class="fas fa-columns me-2 text-muted"></i>Dashboard</a></li>
+                            {% elif user.role == 'admin' %}
+                            <li><a class="dropdown-item rounded-2" href="{% url 'admin_dashboard' %}"><i
+                                        class="fas fa-shield-alt me-2 text-muted"></i>Admin Panel</a></li>
+                            {% elif user.role == 'govt' or user.is_superuser %}
+                            <li><a class="dropdown-item rounded-2" href="{% url 'govt_dashboard' %}"><i
+                                        class="fas fa-building me-2 text-muted"></i>Govt Panel</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item rounded-2" href="{% url 'profile' %}"><i
+                                        class="fas fa-user-circle me-2 text-muted"></i>My Profile</a></li>
+                            <li><a class="dropdown-item rounded-2 text-danger" href="{% url 'logout' %}"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    {% if request.session.system_access %}
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-login" href="{% url 'login' %}">Log In</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-primary btn-signup px-4" href="{% url 'register' %}">Sign Up</a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Layout -->
+    <div class="container-fluid px-0">
+        <div class="row g-0">
+
+            {% if user.is_authenticated %}
+            <!-- Sidebar (Only for logged in users) -->
+            <div class="col-lg-2 d-none d-lg-block">
+                <aside class="sidebar">
+                    <div class="d-grid gap-1">
+                        <h6 class="sidebar-heading">Analytics</h6>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'agent_dashboard' or request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"
+                            href="{% url 'dashboard' %}">
+                            <i class="fas fa-chart-pie"></i> Overview
+                        </a>
+
+                        {% if user.role == 'agent' and user.is_approved %}
+                        <h6 class="sidebar-heading">Management</h6>
+                        <a class="nav-link {% if 'crop' in request.resolver_match.url_name %}active{% endif %}"
+                            href="{% url 'crop_list' %}"><i class="fas fa-seedling"></i> Crops</a>
+                        <a class="nav-link {% if 'farmer' in request.resolver_match.url_name %}active{% endif %}"
+                            href="{% url 'farmer_list' %}"><i class="fas fa-users"></i> Farmers</a>
+                        <a class="nav-link {% if 'warehouse' in request.resolver_match.url_name %}active{% endif %}"
+                            href="{% url 'warehouse_list' %}"><i class="fas fa-warehouse"></i> Warehouses</a>
+                        <a class="nav-link {% if 'transaction' in request.resolver_match.url_name %}active{% endif %}"
+                            href="{% url 'transaction_list' %}"><i class="fas fa-exchange-alt"></i> Transactions</a>
+                        <a class="nav-link {% if 'cultivation' in request.resolver_match.url_name %}active{% endif %}"
+                            href="{% url 'cultivation_cost_list' %}"><i class="fas fa-tractor"></i> Costs</a>
+                        {% endif %}
+
+                        {% if user.role == 'admin' %}
+                        <h6 class="sidebar-heading">Admin</h6>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"
+                            href="{% url 'admin_dashboard' %}"><i class="fas fa-user-shield"></i> Validations</a>
+                        {% endif %}
+
+                        <h6 class="sidebar-heading">Marketplace</h6>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'public_dashboard' %}active{% endif %}"
+                            href="{% url 'public_dashboard' %}"><i class="fas fa-globe-americas"></i> Live Market</a>
+                    </div>
+                </aside>
+            </div>
+            {% endif %}
+
+            <!-- Main Content -->
+            <div class="{% if user.is_authenticated %}col-lg-10{% else %}col-12{% endif %}">
+                <main class="main-content">
+                    {% if messages %}
+                    <div class="container-fluid mb-4 p-0">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center"
+                            role="alert">
+                            {% if message.tags == 'success' %}
+                            <i class="fas fa-check-circle me-2"></i>
+                            {% elif message.tags == 'error' %}
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            {% endif %}
+                            <div>{{ message }}</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% block content %}{% endblock %}
+                </main>
+
+                <!-- Footer -->
+                <footer class="bg-white border-top py-5 mt-auto">
+                    <div class="container-fluid px-5">
+                        <div class="row g-4">
+                            <div class="col-lg-4">
+                                <a class="navbar-brand mb-3 d-inline-block" href="#">
+                                    <i class="fas fa-leaf"></i> FairPrice<span
+                                        style="color: var(--primary-color)">Tracker</span>
+                                </a>
+                                <p class="text-muted small">Empowering farmers and consumers with transparent market
+                                    data. Building a fairer agricultural ecosystem together.</p>
+                                <div class="d-flex gap-3">
+                                    <a href="#" class="text-muted hover-primary"><i
+                                            class="fab fa-facebook fa-lg"></i></a>
+                                    <a href="#" class="text-muted hover-primary"><i
+                                            class="fab fa-twitter fa-lg"></i></a>
+                                    <a href="#" class="text-muted hover-primary"><i
+                                            class="fab fa-linkedin fa-lg"></i></a>
+                                </div>
+                            </div>
+                            <div class="col-6 col-lg-2">
+                                <h6 class="fw-bold mb-3">Platform</h6>
+                                <ul class="list-unstyled d-flex flex-column gap-2 small">
+                                    <li><a href="#" class="text-decoration-none text-muted">Market Prices</a></li>
+                                    <li><a href="#" class="text-decoration-none text-muted">Farmers</a></li>
+                                    <li><a href="#" class="text-decoration-none text-muted">Analytics</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-6 col-lg-2">
+                                <h6 class="fw-bold mb-3">Company</h6>
+                                <ul class="list-unstyled d-flex flex-column gap-2 small">
+                                    <li><a href="#" class="text-decoration-none text-muted">About Us</a></li>
+                                    <li><a href="#" class="text-decoration-none text-muted">Contact</a></li>
+                                    <li><a href="#" class="text-decoration-none text-muted">Privacy Policy</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-4">
+                                <h6 class="fw-bold mb-3">Newsletter</h6>
+                                <p class="small text-muted">Subscribe for weekly market updates.</p>
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control border-end-0" placeholder="Email address">
+                                    <button class="btn btn-primary" type="button"><i
+                                            class="fas fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border-top mt-4 pt-4 text-center">
+                            <p class="small text-muted mb-0">&copy; 2024 FairPriceTracker. All rights reserved.</p>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
+</body>
+
+</html>

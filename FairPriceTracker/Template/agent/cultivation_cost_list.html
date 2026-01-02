@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Cultivation Costs Management - FairPriceTracker{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0"><i class="fas fa-seedling me-2"></i>Cultivation Costs Management</h2>
+    <a href="{% url 'add_cultivation_cost' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i> Add New Cost
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if cultivation_costs %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Farmer</th>
+                        <th>Crop</th>
+                        <th>Area (acres)</th>
+                        <th>Seed Cost</th>
+                        <th>Extra Cost</th>
+                        <th>Total Cost</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cost in cultivation_costs %}
+                    <tr>
+                        <td>{{ cost.farmer.name }}</td>
+                        <td>{{ cost.crop.name }}</td>
+                        <td>{{ cost.cultivation_area }}</td>
+                        <td>৳{{ cost.seed_cost }}</td>
+                        <td>৳{{ cost.extra_cost }}</td>
+                        <td><strong>৳{{ cost.total_cost }}</strong></td>
+                        <td>{{ cost.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'edit_cultivation_cost' cost.id %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'delete_cultivation_cost' cost.id %}" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-seedling fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No Cultivation Costs Found</h5>
+            <p class="text-muted">Get started by adding your first cultivation cost record.</p>
+            <a href="{% url 'add_cultivation_cost' %}" class="btn btn-primary">Add First Cost</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

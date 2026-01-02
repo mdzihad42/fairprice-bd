@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Farmers Management - FairPriceTracker{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0"><i class="fas fa-users me-2"></i>Farmers Management</h2>
+    <a href="{% url 'add_farmer' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i> Add New Farmer
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if farmers %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>NID</th>
+                        <th>Location</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for farmer in farmers %}
+                    <tr>
+                        <td>{{ farmer.name }}</td>
+                        <td>{{ farmer.phone }}</td>
+                        <td>{{ farmer.nid }}</td>
+                        <td>{{ farmer.location }}</td>
+                        <td>{{ farmer.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'edit_farmer' farmer.id %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'delete_farmer' farmer.id %}" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No Farmers Found</h5>
+            <p class="text-muted">Get started by adding your first farmer.</p>
+            <a href="{% url 'add_farmer' %}" class="btn btn-primary">Add First Farmer</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

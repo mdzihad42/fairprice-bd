@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}Agent Dashboard - FairPriceTracker{% endblock %}
+
+{% block content %}
+<div class="div p-lg-4" data-aos="fade-in">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <h6 class="text-uppercase text-muted fw-bold small tracking-wide">Overview</h6>
+            <h1 class="display-6 fw-bold">Welcome back, {{ user.username }}</h1>
+        </div>
+        <div class="d-none d-md-block">
+            <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill">
+                <i class="fas fa-clock me-1"></i> {{ user.last_login|date:"M d, Y H:i" }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="0">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-4 text-primary">
+                            <i class="fas fa-seedling fa-lg"></i>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-link text-muted p-0" data-bs-toggle="dropdown"><i
+                                    class="fas fa-ellipsis-v"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                                <li><a class="dropdown-item" href="{% url 'crop_list' %}">View Details</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ crops.count }}</h3>
+                    <p class="text-muted small mb-0">Total Crops listed</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="100">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="bg-success bg-opacity-10 p-3 rounded-4 text-success">
+                            <i class="fas fa-users fa-lg"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ farmers.count }}</h3>
+                    <p class="text-muted small mb-0">Registered Farmers</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-4 text-warning">
+                            <i class="fas fa-exchange-alt fa-lg"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ transactions.count }}</h3>
+                    <p class="text-muted small mb-0">Total Transactions</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="300">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="bg-info bg-opacity-10 p-3 rounded-4 text-info">
+                            <i class="fas fa-warehouse fa-lg"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ warehouses.count }}</h3>
+                    <p class="text-muted small mb-0">Partner Warehouses</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <h5 class="fw-bold mb-4">Quick Actions</h5>
+    <div class="row g-3 mb-5">
+        <div class="col-sm-6 col-md-4 col-lg-2">
+            <a href="{% url 'add_crop' %}"
+                class="card text-center border-0 shadow-sm hover-card h-100 text-decoration-none">
+                <div class="card-body py-4">
+                    <i class="fas fa-plus-circle fa-2x text-primary mb-3"></i>
+                    <h6 class="text-dark fw-bold mb-0">Add Crop</h6>
+                </div>
+            </a>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-2">
+            <a href="{% url 'add_farmer' %}"
+                class="card text-center border-0 shadow-sm hover-card h-100 text-decoration-none">
+                <div class="card-body py-4">
+                    <i class="fas fa-user-plus fa-2x text-success mb-3"></i>
+                    <h6 class="text-dark fw-bold mb-0">Add Farmer</h6>
+                </div>
+            </a>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-2">
+            <a href="{% url 'add_transaction' %}"
+                class="card text-center border-0 shadow-sm hover-card h-100 text-decoration-none">
+                <div class="card-body py-4">
+                    <i class="fas fa-file-invoice-dollar fa-2x text-warning mb-3"></i>
+                    <h6 class="text-dark fw-bold mb-0">New Deal</h6>
+                </div>
+            </a>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-2">
+            <a href="{% url 'add_warehouse' %}"
+                class="card text-center border-0 shadow-sm hover-card h-100 text-decoration-none">
+                <div class="card-body py-4">
+                    <i class="fas fa-warehouse fa-2x text-info mb-3"></i>
+                    <h6 class="text-dark fw-bold mb-0">New Warehouse</h6>
+                </div>
+            </a>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-2">
+            <a href="{% url 'add_cultivation_cost' %}"
+                class="card text-center border-0 shadow-sm hover-card h-100 text-decoration-none">
+                <div class="card-body py-4">
+                    <i class="fas fa-calculator fa-2x text-secondary mb-3"></i>
+                    <h6 class="text-dark fw-bold mb-0">Add Cost</h6>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Activity -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 24px;">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">Recent Transactions</h5>
+                    <a href="{% url 'transaction_list' %}" class="btn btn-sm btn-light rounded-pill px-3">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 border-0">Crop</th>
+                                    <th class="border-0">Farmer</th>
+                                    <th class="border-0">Warehouse</th>
+                                    <th class="border-0 text-end pe-4">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in transactions|slice:":5" %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="bg-light rounded p-1">
+                                                <i class="fas fa-leaf text-success"></i>
+                                            </div>
+                                            <span class="fw-semibold">{{ t.crop.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-muted">{{ t.farmer.name }}</td>
+                                    <td class="text-muted">{{ t.warehouse.shop_name }}</td>
+                                    <td class="text-end pe-4 fw-bold">৳{{ t.total_cost }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">No recent transactions</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mini Stats -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4" style="border-radius: 24px;">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold mb-3">System Status</h6>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="bg-success text-white rounded-circle p-2">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Account Active</h6>
+                            <small class="text-muted">You are a verified agent</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary text-white rounded-circle p-2">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Contribution</h6>
+                            <small class="text-muted">{{ user_crops_count }} crops contributed</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Card -->
+            <div class="card border-0 shadow-sm bg-primary text-white"
+                style="border-radius: 24px; background: linear-gradient(135deg, #059669 0%, #047857 100%);">
+                <div class="card-body p-4 text-center">
+                    <i class="fas fa-headset fa-3x mb-3 text-white-50"></i>
+                    <h5 class="fw-bold">Need Help?</h5>
+                    <p class="small text-white-50 mb-3">Contact our support details if you face any issues with the
+                        platform.</p>
+                    <button class="btn btn-light rounded-pill fw-bold text-primary w-100">Contact Support</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

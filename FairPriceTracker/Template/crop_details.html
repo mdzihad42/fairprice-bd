@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ crop.name }} Analysis - FairPriceTracker{% endblock %}
+
+{% block content %}
+<div class="div p-lg-4" data-aos="fade-up">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a href="{% url 'public_dashboard' %}"
+                            class="text-decoration-none text-muted">Market</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Crop Analysis</li>
+                </ol>
+            </nav>
+            <h1 class="display-6 fw-bold mb-0">
+                <span class="text-success"><i class="fas fa-seedling me-2"></i>{{ crop.name }}</span> Insights
+            </h1>
+            <p class="text-muted mt-2">Comprehensive market data, price trends, and cultivation costs.</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{% url 'public_dashboard' %}" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="fas fa-arrow-left me-2"></i>Market
+            </a>
+            <button class="btn btn-primary rounded-pill px-4" onclick="window.print()">
+                <i class="fas fa-download me-2"></i>Report
+            </button>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="card mb-5 border-0 shadow-sm" style="border-radius: 24px;">
+        <div class="card-body p-4 p-lg-5">
+            <h5 class="fw-bold mb-4">Price History Trend</h5>
+            <div class="chart-container" style="position: relative; height:400px; width:100%">
+                <canvas id="priceLineChart"></canvas>
+            </div>
+            <div class="text-center mt-3 text-muted small">
+                Historical price data over the last 5 years
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <!-- Farmers List -->
+        <div class="col-lg-12">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 24px;">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex align-items-center gap-3">
+                    <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success">
+                        <i class="fas fa-users fa-lg"></i>
+                    </div>
+                    <h5 class="mb-0 fw-bold">Active Farmers</h5>
+                </div>
+                <div class="card-body p-4">
+                    {% if farmers %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="bg-light text-uppercase text-secondary text-xs">
+                                <tr>
+                                    <th class="border-0 rounded-start">Farmer Name</th>
+                                    <th class="border-0">Contact</th>
+                                    <th class="border-0">NID</th>
+                                    <th class="border-0 rounded-end">Location</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for farmer in farmers %}
+                                <tr>
+                                    <td class="fw-semibold text-dark py-3">{{ farmer.name }}</td>
+                                    <td class="text-muted">{{ farmer.phone }}</td>
+                                    <td class="text-muted"><span class="badge bg-light text-dark border">{{ farmer.nid }}</span></td>
+                                    <td class="text-muted"><i class="fas fa-map-marker-alt me-1 text-danger"></i> {{ farmer.location }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 text-muted bg-light rounded-3">
+                        <i class="fas fa-user-slash fa-2x mb-3 opacity-25"></i>
+                        <p class="mb-0">No farmer data available yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row for Warehouses and Costs -->
+    <div class="row g-4">
+
+        <!-- Wayrehouses -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 24px;">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex align-items-center gap-3">
+                    <div class="bg-warning bg-opacity-10 p-3 rounded-circle text-warning">
+                        <i class="fas fa-warehouse fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Stocking Warehouses</h5>
+                        <small class="text-muted">Licensed storage facilities</small>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if warehouses %}
+                    <div class="list-group list-group-flush">
+                        {% for warehouse in warehouses %}
+                        <div class="list-group-item border-0 p-4 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold mb-0">{{ warehouse.shop_name }}</h6>
+                                {% if warehouse.is_approved %}
+                                <span class="badge bg-success-subtle text-success rounded-pill px-3">Verified</span>
+                                {% else %}
+                                <span class="badge bg-warning-subtle text-warning rounded-pill px-3">Pending</span>
+                                {% endif %}
+                            </div>
+                            <div class="small text-muted mb-2">
+                                <i class="fas fa-id-card me-1"></i> Lic: {{ warehouse.licence_number }}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center small">
+                                <span class="text-muted"><i class="fas fa-phone me-1"></i> {{ warehouse.owner_phone }}</span>
+                                <span class="text-muted"><i class="fas fa-map-pin me-1"></i> {{ warehouse.location }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 px-4 text-muted">
+                        <p class="mb-0">No warehouse data found.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Cultivation Costs -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 24px;">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex align-items-center gap-3">
+                    <div class="bg-info bg-opacity-10 p-3 rounded-circle text-info">
+                        <i class="fas fa-coins fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0 fw-bold">Cost Analysis</h5>
+                        <small class="text-muted">Estimated cultivation expenses</small>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    {% if cultivation_costs %}
+                    <div class="table-responsive">
+                        <table class="table align-middle table-borderless">
+                            <thead class="border-bottom">
+                                <tr class="text-muted small">
+                                    <th>Farmer</th>
+                                    <th>Area</th>
+                                    <th class="text-end">Total</th>
+                                    <th class="text-end">Per Acre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cost in cultivation_costs %}
+                                <tr>
+                                    <td class="fw-medium">{{ cost.farmer.name }}</td>
+                                    <td class="text-muted">{{ cost.cultivation_area }}ac</td>
+                                    <td class="text-end fw-bold text-dark">৳{{ cost.total_cost }}</td>
+                                    <td class="text-end text-success">৳{{ cost.cost_per_acre|floatformat:1 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <p class="mb-0">No cost analysis data available.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('priceLineChart').getContext('2d');
+
+        // Create gradient
+        let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(5, 150, 105, 0.2)'); // Brand Green
+        gradient.addColorStop(1, 'rgba(5, 150, 105, 0)');
+
+        const data = {
+            labels: [{% for entry in price_history %}"{{ entry.year }}", {% endfor %}],
+        datasets: [{
+            label: 'Market Price (৳)',
+            data: [{% for entry in price_history %}{{ entry.price }}, {% endfor %}],
+        fill: true,
+        backgroundColor: gradient,
+        borderColor: '#059669',
+        borderWidth: 3,
+        tension: 0.4, // Smooth curve
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#059669',
+        pointBorderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8
+        }]
+    };
+
+    new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    titleColor: '#0f172a',
+                    bodyColor: '#0f172a',
+                    borderColor: 'rgba(0,0,0,0.05)',
+                    borderWidth: 1,
+                    padding: 10,
+                    displayColors: false,
+                    callbacks: {
+                        label: function (context) {
+                            return "৳ " + context.formattedValue;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        borderDash: [5, 5],
+                        color: 'rgba(0,0,0,0.05)'
+                    },
+                    ticks: {
+                        callback: function (value) { return '৳' + value; },
+                        font: { family: "'Plus Jakarta Sans', sans-serif" }
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        font: { family: "'Plus Jakarta Sans', sans-serif" }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

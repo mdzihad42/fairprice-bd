@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}System Access - FairPriceTracker{% endblock %}
+
+{% block content %}
+<div class="div p-lg-5" data-aos="fade-in">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="card-body p-5">
+                    {% if request.session.system_access %}
+                    <div class="text-center mb-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+                            <i class="fas fa-unlock text-success fa-2x"></i>
+                        </div>
+                        <h4 class="fw-bold text-success">Access Granted</h4>
+                        <p class="text-muted small">System is currently unlocked for Login & Registration.</p>
+
+                        <a href="{% url 'logout_system' %}"
+                            class="btn btn-danger w-100 py-3 rounded-pill fw-bold shadow-sm mt-3">
+                            Lock System Access <i class="fas fa-lock ms-2"></i>
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="text-center mb-4">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
+                            <i class="fas fa-key text-primary fa-2x"></i>
+                        </div>
+                        <h4 class="fw-bold">System Access</h4>
+                        <p class="text-muted small">Enter system credentials to access login/register features.</p>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label small text-uppercase text-muted fw-bold">Username</label>
+                            <input type="text" name="username" class="form-control form-control-lg bg-light border-0"
+                                required autofocus>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small text-uppercase text-muted fw-bold">Password</label>
+                            <input type="password" name="password"
+                                class="form-control form-control-lg bg-light border-0" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm">
+                            Unlock Access <i class="fas fa-unlock ms-2"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

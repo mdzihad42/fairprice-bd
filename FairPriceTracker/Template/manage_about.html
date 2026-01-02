@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage About Page Content - Govt{% endblock %}
+
+{% block content %}
+<div class="div p-lg-4" data-aos="fade-in">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-dark text-white p-4 rounded-top-4">
+                    <h4 class="mb-0 fw-bold"><i class="fas fa-edit me-2"></i>Manage About Page Content</h4>
+                </div>
+                <div class="card-body p-5">
+
+                    {% if content %}
+                    <div class="alert alert-info d-flex align-items-center mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <div>Last updated: <strong>{{ content.updated_at|date:"F j, Y, g:i a" }}</strong></div>
+                    </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label for="id_hero_image" class="form-label fw-bold">Hero Section Image</label>
+                            {% if content.hero_image %}
+                            <div class="mb-2 p-2 border rounded bg-light">
+                                <small class="d-block text-muted mb-1">Current Image:</small>
+                                <img src="{{ content.hero_image.url }}" alt="Hero Image" class="img-fluid rounded"
+                                    style="max-height: 200px;">
+                            </div>
+                            {% endif %}
+                            {{ form.hero_image }}
+                            <small class="text-muted">Upload a high-quality image for the top sections banner.</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_mission_image" class="form-label fw-bold">Mission Section Image</label>
+                            {% if content.mission_image %}
+                            <div class="mb-2 p-2 border rounded bg-light">
+                                <small class="d-block text-muted mb-1">Current Image:</small>
+                                <img src="{{ content.mission_image.url }}" alt="Mission Image" class="img-fluid rounded"
+                                    style="max-height: 200px;">
+                            </div>
+                            {% endif %}
+                            {{ form.mission_image }}
+                            <small class="text-muted">Upload an image for the 'Mission & Values' section.</small>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'govt_dashboard' %}"
+                                class="btn btn-light btn-lg rounded-pill px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - FairPriceTracker{% endblock %}
+
+{% block content %}
+<div class="div p-lg-4" data-aos="fade-in">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 24px;">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary bg-opacity-10 p-2 rounded text-primary">
+                            <i class="fas fa-user-circle fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-0 fw-bold">My Profile</h4>
+                            <p class="text-muted mb-0 small">Manage your account information.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase text-muted">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase text-muted">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase text-muted">Email Address</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase text-muted">Phone Number</label>
+                                {{ form.phone }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-uppercase text-muted">District</label>
+                                {{ form.district }}
+                                <div class="form-text text-muted">Contact administration to change your district
+                                    assignment if needed.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary rounded-pill px-4">
+                                <i class="fas fa-save me-2"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-muted small">Account Role: <span class="badge bg-secondary text-uppercase">{{
+                        user.role|default:"User" }}</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,303 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - FairPriceTracker{% endblock %}
+
+{% block content %}
+<div class="div p-lg-4" data-aos="fade-in">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5">
+        <div>
+            <h6 class="text-uppercase text-muted fw-bold small tracking-wide">System Administration</h6>
+            <h1 class="display-6 fw-bold">Executive Overview</h1>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <button class="btn btn-light border" onclick="location.reload()"><i class="fas fa-sync-alt"></i></button>
+            <span
+                class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill d-flex align-items-center">
+                <i class="fas fa-shield-alt me-2"></i> Admin Access
+            </span>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-sm-6 col-xl-3" data-aos="fade-up" data-aos-delay="0">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-4 text-primary">
+                            <i class="fas fa-user-clock fa-lg"></i>
+                        </div>
+                        <span class="badge bg-warning-subtle text-warning rounded-pill">Action Needed</span>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ pending_agents.count }}</h3>
+                    <p class="text-muted small mb-0">Agents Awaiting Approval</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3" data-aos="fade-up" data-aos-delay="100">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-4 text-warning">
+                            <i class="fas fa-warehouse fa-lg"></i>
+                        </div>
+                        <span class="badge bg-warning-subtle text-warning rounded-pill">Action Needed</span>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ pending_warehouses.count }}</h3>
+                    <p class="text-muted small mb-0">Warehouses Awaiting Approval</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="bg-success bg-opacity-10 p-3 rounded-4 text-success">
+                            <i class="fas fa-users fa-lg"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ total_agents }}</h3>
+                    <p class="text-muted small mb-0">Active Agents</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3" data-aos="fade-up" data-aos-delay="300">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="bg-info bg-opacity-10 p-3 rounded-4 text-info">
+                            <i class="fas fa-building fa-lg"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ total_warehouses }}</h3>
+                    <p class="text-muted small mb-0">Active Warehouses</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Pending Agents Table -->
+        <div class="col-12" data-aos="fade-up">
+            <div class="card border-0 shadow-sm" style="border-radius: 24px;">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex align-items-center gap-3">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded text-primary">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <h5 class="mb-0 fw-bold">Agent Approvals</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if pending_agents %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-uppercase text-secondary text-xs">
+                                <tr>
+                                    <th class="ps-4 border-0">User Details</th>
+                                    <th class="border-0">Contact Info</th>
+                                    <th class="border-0">Registration Date</th>
+                                    <th class="border-0 text-end pe-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for agent in pending_agents %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="avatar bg-light rounded-circle d-flex align-items-center justify-content-center"
+                                                style="width: 40px; height: 40px;">
+                                                <i class="fas fa-user text-muted"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark">{{ agent.username }}</div>
+                                                <small class="text-muted">{{ agent.email|default:"No email" }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-muted"><i class="fas fa-phone small me-2"></i>{{ agent.phone|default:"-" }}</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border">{{ agent.date_joined|date:"M d, Y" }}</span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <a href="{% url 'approve_agent' agent.id %}"
+                                            class="btn btn-success btn-sm rounded-pill px-3 fw-bold">
+                                            <i class="fas fa-check me-1"></i> Approve
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <div class="bg-light rounded-circle d-inline-flex p-3 mb-3">
+                            <i class="fas fa-check text-success fa-2x"></i>
+                        </div>
+                        <p class="text-muted mb-0">All agents are handled.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Agents in District -->
+        <div class="col-12 mb-5" data-aos="fade-up">
+            <div class="card border-0 shadow-sm" style="border-radius: 24px;">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-success bg-opacity-10 p-2 rounded text-success">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h5 class="mb-0 fw-bold">Active Agents in My District</h5>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-uppercase text-secondary text-xs">
+                                <tr>
+                                    <th class="ps-4 border-0">Username</th>
+                                    <th class="border-0">Phone</th>
+                                    <th class="border-0">Date Joined</th>
+                                    <th class="border-0 text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for agent in active_agents %}
+                                <tr>
+                                    <td class="ps-4 fw-bold text-dark">{{ agent.username }}</td>
+                                    <td class="text-muted">{{ agent.phone|default:"-" }}</td>
+                                    <td><span class="badge bg-light text-dark border">{{ agent.date_joined|date:"M d, Y" }}</span></td>
+                                    <td class="text-end pe-4">
+                                        <a href="{% url 'delete_user' agent.id %}"
+                                            class="btn btn-outline-danger btn-sm rounded-pill px-3"
+                                            onclick="return confirm('Are you sure you want to remove this agent from your district?')">
+                                            <i class="fas fa-trash-alt me-1"></i> Remove
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">No active agents found in your
+                                        district.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Warehouses Table -->
+        <div class="col-12" data-aos="fade-up" data-aos-delay="100">
+            <div class="card border-0 shadow-sm" style="border-radius: 24px;">
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex align-items-center gap-3">
+                    <div class="bg-warning bg-opacity-10 p-2 rounded text-warning">
+                        <i class="fas fa-warehouse"></i>
+                    </div>
+                    <h5 class="mb-0 fw-bold">Warehouse Approvals</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if pending_warehouses %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-uppercase text-secondary text-xs">
+                                <tr>
+                                    <th class="ps-4 border-0">Warehouse Info</th>
+                                    <th class="border-0">Owner</th>
+                                    <th class="border-0">Location</th>
+                                    <th class="border-0 text-end pe-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for warehouse in pending_warehouses %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold text-dark">{{ warehouse.shop_name }}</div>
+                                        <small class="text-muted">Lic: <span class="font-monospace">{{ warehouse.licence_number }}</span></small>
+                                    </td>
+                                    <td>
+                                        <div>{{ warehouse.created_by.username }}</div>
+                                        <small class="text-muted">{{ warehouse.owner_phone }}</small>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-map-marker-alt text-danger me-1"></i> {{ warehouse.location }}
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <a href="{% url 'approve_warehouse' warehouse.id %}"
+                                            class="btn btn-success btn-sm rounded-pill px-3 fw-bold">
+                                            <i class="fas fa-check me-1"></i> Approve
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <div class="bg-light rounded-circle d-inline-flex p-3 mb-3">
+                            <i class="fas fa-check text-success fa-2x"></i>
+                        </div>
+                        <p class="text-muted mb-0">All warehouses checked.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="card border-0 shadow-sm mt-5" style="border-radius: 24px;">
+        <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary bg-opacity-10 p-2 rounded text-primary">
+                    <i class="fas fa-history"></i>
+                </div>
+                <h5 class="mb-0 fw-bold">Recent Updates in Your District</h5>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-uppercase text-secondary text-xs">
+                        <tr>
+                            <th class="ps-4 border-0">Timestamp</th>
+                            <th class="border-0">Crop</th>
+                            <th class="border-0">Warehouse</th>
+                            <th class="border-0">Agent</th>
+                            <th class="border-0 text-end pe-4">Price (Tk/Kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for activity in recent_activities %}
+                        <tr>
+                            <td class="ps-4 text-muted small">{{ activity.created_at|date:"M d, - h:i A" }}</td>
+                            <td class="fw-bold text-dark">{{ activity.crop.name }}</td>
+                            <td class="text-muted">{{ activity.warehouse.shop_name }}</td>
+                            <td class="text-dark"><span class="fw-semibold">{{ activity.created_by.username }}</span>
+                            </td>
+                            <td class="text-end pe-4 fw-bold text-primary">{{ activity.total_cost }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">No recent activity found in this
+                                district.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
